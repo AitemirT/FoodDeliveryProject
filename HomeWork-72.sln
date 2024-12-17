@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodDelivery", "FoodDelivery\FoodDelivery.csproj", "{F42B72B1-703C-4858-9268-6B2A2239B67E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F42B72B1-703C-4858-9268-6B2A2239B67E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F42B72B1-703C-4858-9268-6B2A2239B67E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F42B72B1-703C-4858-9268-6B2A2239B67E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F42B72B1-703C-4858-9268-6B2A2239B67E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

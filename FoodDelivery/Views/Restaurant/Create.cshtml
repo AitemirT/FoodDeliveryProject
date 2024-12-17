@@ -1,0 +1,36 @@
+@model FoodDelivery.ViewModels.CreateRestaurantViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h3 class="text-center mb-3">Создать новое заведение</h3>
+
+<div class="row">
+    <div class="col-md-5 mx-auto">
+        <form asp-action="Create" asp-controller="Restaurant" enctype="multipart/form-data" asp-anti-forgery="true">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="RestaurantName" class="control-label">Название заведения</label>
+                <input asp-for="RestaurantName" class="form-control" />
+                <span asp-validation-for="RestaurantName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Photo" class="control-label">Фото заведения</label>
+                <input asp-for="Photo" class="form-control" type="file" accept="image/*"/>
+                <span asp-validation-for="Photo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="control-label">Описание</label>
+                <textarea asp-for="Description" class="form-control" style="resize: none" cols="10" rows="7"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3 text-center">
+                <input type="submit" value="Создать" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

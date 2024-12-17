@@ -1,0 +1,161 @@
+@model FoodDelivery.ViewModels.RestaurantDetailsViewModel
+
+@{
+    ViewData["Title"] = "Детали заведения";
+}
+
+<h3 class="text-center mb-4">Детали заведения @Model.Restaurant.Name</h3>
+
+<div class="row">
+    <div class="col-6 d-flex flex-column ms-auto">
+        <div class="row">
+            <div class="col-9 mx-auto">
+                <div class="card mb-3">
+                    <img src="@Model.Restaurant.PathToPhoto" class="card-img-top" alt="...">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@Model.Restaurant.Name</h5>
+                        <p class="card-text text-wrap text-break">@Model.Restaurant.Description</p>
+                    </div>
+                </div>
+
+                <h4 class="text-center mb-4">Все блюда</h4>
+
+                <div>
+                    @if (Model.Restaurant.Dishes.Count > 0)
+                    {
+                        @foreach (Dish dish in Model.Restaurant.Dishes)
+                        {
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">@dish.Name</h5>
+                                    <p class="card-text text-muted text-center text-wrap text-break">@dish.Description</p>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <input type="number" min="0" id="dish-@dish.Id" class="form-control w-50 me-2" placeholder="Кол-во">
+                                        <button class="btn btn-success" type="button" onclick="addToCart('@dish.Id', '@Model.Restaurant.Id')">
+                                            Добавить <i class="bi bi-cart-plus"></i>
+                                        </button>
+                                        
+                                        
+                                        @if (User.IsInRole("admin"))
+                                        {
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDishModal" data-bs-whatever="@dish.Id">Удалить</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-center">
+                            Пока у данного заведения нет блюд
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-3 border border-2 border-dark rounded-2 align-self-start" id="cart-block">
+        @{
+            await Html.RenderPartialAsync("/Views/Cart/_CartPartialView.cshtml", Model.Cart);
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="deleteDishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Вы действительно хотите удалить блюдо ?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-controller="Dish" asp-action="Delete" class="d-inline">
+                    <input type="hidden" name="id" id="deleteDishInp" value="">
+                    <input type="submit" value="Удалить" class="btn btn-danger me-2">
+                </form>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Отменить</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Оформление заказа</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" asp-controller="Order">
+                    <input type="hidden" name="cartId" id="cartId" value="@Model.Cart.Id">
+                    <div>
+                        <label for="customerName" class="form-label">Имя получателя</label>
+                        <input type="text" class="form-control" id="customerName" name="customerName" required>
+                    </div>
+                    <div>
+                        <label for="address" class="form-label">Адресс получателя</label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+                    <div>
+                        <label for="phoneNumber" class="form-label">Телефон</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Почта</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+                    <button type="submit" class="btn btn-primary">Подвердить заказ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        function addToCart(dishId, restaurantId) {
+            let count = $('#dish-' + dishId).val();
+            let cartBlock = $('#cart-block');
+            
+            if (count > 0) {
+                $.ajax({
+                    url: '@Url.Action("AddToCart", "Cart")',
+                    type: 'POST',
+                    data: { 'dishId' : dishId, 'restaurantId' : restaurantId, 'count' : count },
+                    success: function (response) {
+                        cartBlock.html(response);
+                        $('#dish-' + dishId).val(0);
+                    }
+                });
+            } 
+        }
+
+        function deleteFromCart(cartDishId) {
+            let cartBlock = $('#cart-block');
+            $.ajax({
+                url: '@Url.Action("DeleteFromCart", "Cart")',
+                type: 'POST',
+                data: { 'cartDishId' : cartDishId},
+                success: function (response) {
+                    cartBlock.html(response);
+                }
+            });
+        }
+
+        const deleteDishModal = document.getElementById('deleteDishModal')
+        if (deleteDishModal) {
+            deleteDishModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget
+                const id = button.getAttribute('data-bs-whatever')
+                let deleteDishInp = document.getElementById('deleteDishInp');
+                deleteDishInp.value = id;
+            })
+        }
+    </script>
+}

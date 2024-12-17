@@ -1,0 +1,24 @@
+﻿@model Cart
+
+<div class="d-flex flex-column py-3">
+    <h5 class="text-center mb-3">Корзина</h5>
+
+    <div class="overflow-auto" style="height: 600px;">
+        @foreach (CartDish cartDish in Model.CartDishes)
+        {
+            <div class="d-flex justify-content-between border border-1 rounded-2 mb-3 px-3 pt-2">
+                <h5 class="text-wrap text-break">@cartDish.Dish.Name</h5>
+                
+                <div class="d-flex align-items-start">
+                    <p class="me-2">@cartDish.Dish.Price сом | x @cartDish.Quantity</p>
+                    <button onclick="deleteFromCart('@cartDish.Id')" type="button" class="btn-close text-danger" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center border border-2 py-3 bg-light mt-auto">
+        <p class="fw-bold">Общая сумма: @Model.CartDishes.Sum(ct => ct.Dish.Price * ct.Quantity) сом</p>
+        <a class="btn btn-outline-success" id="orderBtn" data-bs-toggle="modal" data-bs-target="#orderModal">Оформить заказ</a>
+    </div>
+</div>
